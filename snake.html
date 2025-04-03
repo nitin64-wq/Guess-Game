@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Snake Water Gun Game</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            color: white;
+            perspective: 1000px;
+        }
+        
+        .game-container {
+            width: 400px;
+            height: 500px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 1s;
+        }
+        
+        .game-container:hover {
+            transform: rotateY(20deg);
+        }
+        
+        .panel {
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            transform: translateZ(50px);
+        }
+        
+        h1 {
+            text-align: center;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+            margin-top: 0;
+        }
+        
+        .choices {
+            display: flex;
+            justify-content: space-around;
+            margin: 30px 0;
+        }
+        
+        .choice {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            cursor: pointer;
+            transition: all 0.3s;
+            transform-style: preserve-3d;
+            transform: translateZ(0);
+        }
+        
+        .choice:hover {
+            transform: translateZ(20px) scale(1.1);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.7);
+        }
+        
+        #snake { background: #4CAF50; }
+        #water { background: #2196F3; }
+        #gun { background: #f44336; }
+        
+        .result {
+            text-align: center;
+            font-size: 24px;
+            min-height: 30px;
+            margin: 20px 0;
+            text-shadow: 0 0 5px white;
+        }
+        
+        .scores {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+        
+        .score {
+            text-align: center;
+        }
+        
+        .score-value {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .computer-choice {
+            font-size: 60px;
+            text-align: center;
+            margin: 20px 0;
+            min-height: 80px;
+        }
+        
+        .flip {
+            animation: flip 0.5s;
+        }
+        
+        @keyframes flip {
+            0% { transform: rotateY(0); }
+            50% { transform: rotateY(90deg); }
+            100% { transform: rotateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="panel">
+            <h1>Snake Water Gun</h1>
+            <div class="computer-choice" id="computer-choice">🤖</div>
+            <div class="result" id="result">Choose an option!</div>
+            <div class="choices">
+                <div class="choice" id="snake">🐍</div>
+                <div class="choice" id="water">💧</div>
+                <div class="choice" id="gun">🔫</div>
+            </div>
+            <div class="scores">
+                <div class="score">
+                    <div>You</div>
+                    <div class="score-value" id="user-score">0</div>
+                </div>
+                <div class="score">
+                    <div>Computer</div>
+                    <div class="score-value" id="computer-score">0</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const choices = ['🐍', '💧', '🔫'];
+        let userScore = 0;
+        let computerScore = 0;
+        
+        document.getElementById('snake').addEventListener('click', () => playGame('🐍'));
+        document.getElementById('water').addEventListener('click', () => playGame('💧'));
+        document.getElementById('gun').addEventListener('click', () => playGame('🔫'));
+        
+        function playGame(userChoice) {
+            const computerChoice = choices[Math.floor(Math.random() * 3)];
+            const computerChoiceElement = document.getElementById('computer-choice');
+            const resultElement = document.getElementById('result');
+            
+            // Animation
+            computerChoiceElement.textContent = '❔';
+            computerChoiceElement.classList.add('flip');
+            
+            setTimeout(() => {
+                computerChoiceElement.textContent = computerChoice;
+                computerChoiceElement.classList.remove('flip');
+                
+                // Determine winner
+                let result;
+                if (userChoice === computerChoice) {
+                    result = "It's a tie!";
+                } else if (
+                    (userChoice === '🐍' && computerChoice === '💧') ||
+                    (userChoice === '💧' && computerChoice === '🔫') ||
+                    (userChoice === '🔫' && computerChoice === '🐍')
+                ) {
+                    result = "You win!";
+                    userScore++;
+                } else {
+                    result = "Computer wins!";
+                    computerScore++;
+                }
+                
+                resultElement.textContent = result;
+                document.getElementById('user-score').textContent = userScore;
+                document.getElementById('computer-score').textContent = computerScore;
+                
+                // 3D tilt effect
+                document.querySelector('.game-container').style.transform = 
+                    `rotateY(${Math.random() * 20 - 10}deg) rotateX(${Math.random() * 10 - 5}deg)`;
+            }, 500);
+        }
+    </script>
+</body>
+</html>
